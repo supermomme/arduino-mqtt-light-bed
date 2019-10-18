@@ -48,12 +48,14 @@ var sequenzes = {
   }
 }
 
-let currentSequenz = {
+var currentSequenz = {
   name: "FULL/RED",
   fullInitialized: false,
   currentFrame: 0,
   waitFrames: 0
 }
+
+var sequenzesProtection = true
 
 console.log(`${username}@${hostname}`)
 var board = new firmata.Board('/dev/ttyACM0',function(){
@@ -89,6 +91,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
             console.log(`PUBLISH ${key}: ${sequenzes[key]}`)
             client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: sequenzes[key] }), { retain: true })
           }
+          setTimeout(() => sequenzesProtection = false, 1000)
         }
       })
     })
@@ -104,8 +107,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
             currentFrame: 0
           }
         } else {
-          console.log(`Create/Patch Sequenz: ${topic.split('home/room/momme/light/bed/')[1]}`)
-          sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
+          if (!sequenzesProtection) {
+            console.log(`Create/Patch Sequenz: ${topic.split('home/room/momme/light/bed/')[1]}`)
+            sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
+          }
         }
       } catch (error) {
         console.log(error)
