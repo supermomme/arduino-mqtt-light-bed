@@ -103,7 +103,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       try {
         let doc = JSON.parse(message)
         if (topic === 'home/room/momme/light/bed') {
-          console.log(`Set Sequenz to ${doc.val}: ${sequenzes[doc.val]}`)
+          console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
           currentSequenz = {
             name: doc.val,
             fullInitialized: false,
