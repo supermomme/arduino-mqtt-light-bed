@@ -162,7 +162,7 @@ function runCmd(strip, cmd, currentSequenz) {
   if (cmd.r != undefined) rgb[0] = cmd.r
   if (cmd.g != undefined) rgb[1] = cmd.g
   if (cmd.b != undefined) rgb[2] = cmd.b
-  console.log(`${cmd.cmd} ; ${rgb} ; ${cmd}`)
+  console.log(`${cmd.cmd} ; ${rgb} ; ${currentSequenz}`)
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
       strip.color(rgb)
