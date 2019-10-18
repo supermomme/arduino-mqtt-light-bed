@@ -86,7 +86,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         if (!err) {
           client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
           for (var key in sequenzes) {
-            client.publish('home/room/momme/light/bed/'+key, JSON.stringify(sequenzes[key]), { retain: true })
+            client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: sequenzes[key] }), { retain: true })
           }
         }
       })
