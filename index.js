@@ -93,8 +93,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
             currentFrame: 0
           }
         } else {
-          let newSeqName = topic.split('home/room/momme/light/bed/')[1]
-          console.log(newSeqName)
+          console.log(`Create/Patch Sequenz: ${topic.split('home/room/momme/light/bed/')[1]}`)
+          sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
         }
       } catch (error) {
         console.log(error)
