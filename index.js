@@ -78,7 +78,11 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         let doc = JSON.parse(message)
         console.log(`${topic}: ${JSON.stringify(doc)}`)
         if (topic === 'home/room/momme/light/bed') {
-          SEQUENZ = doc.val
+          /*currentSequenz = {
+            name: doc.val,
+            fullInitialized: false,
+            currentFrame: 0
+          }*/
         } else {
           // SET SEQ
         }
@@ -97,7 +101,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
       strip.show()*/
 
-      let SEQUENZ = sequenzes[currentSequenz.name]
+      let CURSEQ = sequenzes[currentSequenz.name]
 
       if (SEQUENZ == undefined) {
         strip.off()
@@ -105,10 +109,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         return
       }
 
-      if (currentSequenz.fullInitialized) {
-        runCmd(strip, currentSequenz.SEQUENZ[currentSequenz.currentFrame])
-        if (currentSequenz.currentFrame === currentSequenz.SEQUENZ.length-1) currentSequenz.currentFrame = 0
-        else currentSequenz.currentFrame++
+      if (CURSEQ.fullInitialized) {
+        runCmd(strip, CURSEQ.SEQUENZ[CURSEQ.currentFrame])
+        if (CURSEQ.currentFrame === CURSEQ.SEQUENZ.length-1) CURSEQ.currentFrame = 0
+        else CURSEQ.currentFrame++
       } else {
         
       }
