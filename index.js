@@ -22,6 +22,7 @@ let sequenzes = {
   },
   "RUNNING_WHITE": {
     "INIT": [
+      { "cmd": "off" },
       { "cmd": "pixel", "pixel": 0, "r": 255, "g": 255, "b": 255 },
       { "cmd": "pixel", "pixel": 1, "r": 255, "g": 255, "b": 255 },
       { "cmd": "show" }
@@ -34,9 +35,10 @@ let sequenzes = {
 }
 
 let currentSequenz = {
-  name: "FULL_RED",
-  fullInitialized: true,
-  currentFrame: 0
+  name: "RUNNING_WHITE",
+  fullInitialized: false,
+  currentFrame: 0,
+  waitFrames: 0
 }
 
 console.log(`${username}@${hostname}`)
@@ -111,10 +113,22 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 })
 
 function runCmd(strip, cmd) {
-  console.log(cmd)
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
       strip.color([cmd.r || 0, cmd.g || 0, cmd.b || 0])
+      break;
+    case "PIXEL":
+      strip.pixel(cmd.pixel).color([cmd.r || 0, cmd.g || 0, cmd.b || 0])
+      break;
+    case "SHIFT":
+      let dir = cmd.dir.toUpperCase() === 'FORWARD' ? pixel.FORWARD : pixel.BACKWARD
+      strip.shift(cmd.amt || 1, dir, cmd.wrap || true);
+      break;
+    case "PIXEL_OFF":
+      strip.pixel(cmd.pixel).off()
+      break;
+    case "OFF":
+      strip.off()
       break;
     case "SHOW":
       strip.show()
