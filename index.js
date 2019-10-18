@@ -109,7 +109,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
       let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
 
-      if (currentSequenz.fullInitialized) {
+      if (currentSequenz.fullInitialized || INIT.length === 0) {
         runCmd(strip, SEQUENZ[currentSequenz.currentFrame])
         if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
         else currentSequenz.currentFrame++
