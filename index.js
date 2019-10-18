@@ -39,7 +39,10 @@ var sequenzes = {
       { "cmd": "off" },
       { "cmd": "pixel", "pixel": 0, "r": 255, "g": 255, "b": 255 },
       { "cmd": "pixel", "pixel": 1, "r": 255, "g": 255, "b": 255 },
-      { "cmd": "show" }
+      { "cmd": "pixel", "pixel": 60, "r": 255, "g": 255, "b": 255 },
+      { "cmd": "pixel", "pixel": 61, "r": 255, "g": 255, "b": 255 },
+      { "cmd": "show" },
+      { "cmd": "wait", "wait": 300 }
     ],
     "SEQUENZ": [
       { "cmd": "shift", "amt": 4, "dir": "BACKWARD", "wrap": true },
@@ -87,7 +90,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         if (!err) {
           client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
           for (var key in sequenzes) {
-            console.log(`PUBLISH SAVED SEQUENZ ${key}: ${sequenzes[key]}`)
+            console.log(`PUBLISH SAVED SEQUENZ ${key}: ${JSON.stringify(sequenzes[key])}`)
             client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: sequenzes[key] }), { retain: true })
           }
           setTimeout(() => sequenzesProtection = false, 1000)
