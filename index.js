@@ -61,11 +61,14 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     console.log("READY")
     strip.pixel(0).color([0,0,0])
     strip.pixel(1).color([255,255,255])
+    strip.pixel(2).color([255,255,255])
+    strip.pixel(3).color([255,255,255])
+    strip.pixel(4).color([255,255,255])
     strip.show()
     setInterval(() => {
       strip.shift(1, pixel.FORWARD, true)
-/      strip.show()
-    }, 1000/20)
+      strip.show()
+    }, 1000/30)
   });
 });
 
