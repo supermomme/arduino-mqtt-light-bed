@@ -75,9 +75,9 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     })
     client.on('connect', function () {
       console.log("Connected")
-      client.subscribe(['home/room/momme/light/bed/+'], function (err) {
+      client.subscribe(['home/room/momme/light/bed/#'], function (err) {
         if (!err) {
-          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL_GREEN", connected: true }))
+          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL_GREEN", connected: true }), { retain: true })
         }
       })
     })
@@ -93,7 +93,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
             currentFrame: 0
           }
         } else {
-          let newSeqName = topic.split('home/room/momme/light/bed')
+          let newSeqName = topic.split('home/room/momme/light/bed/')[1]
           console.log(newSeqName)
         }
       } catch (error) {
