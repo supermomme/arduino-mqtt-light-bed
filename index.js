@@ -145,8 +145,6 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
       } else if (!doesSEQUENZWork && !doesINITWork) {
         console.log('BAD SEQUENZ: No SEQUENZ; No INIT')
-      } else {
-        console.log(`Somthing else is wrong: doesSEQUENZWork: ${doesSEQUENZWork} doesINITWork: ${doesINITWork} currentSequenz.fullInitialized: ${currentSequenz.fullInitialized}`)
       }
 
     }, 1000/fps)
