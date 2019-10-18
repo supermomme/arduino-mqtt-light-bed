@@ -7,7 +7,8 @@ const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
 
-var sequenzes = {
+var sequenzes = { }
+const baseSequenzes = {
   "BLACK": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "OFF": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "FULL/RED": {
@@ -61,8 +62,6 @@ var currentSequenz = {
   waitFrames: 0
 }
 
-var sequenzesProtection = true
-
 var board = new firmata.Board('/dev/ttyACM0',function(){
   strip = new pixel.Strip({
     firmata: board,
@@ -92,11 +91,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       client.subscribe(['home/room/momme/light/bed/#'], function (err) {
         if (!err) {
           client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
-          for (var key in sequenzes) {
-            console.log(`PUBLISH SAVED SEQUENZ ${key}: ${JSON.stringify(sequenzes[key])}`)
-            client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: sequenzes[key] }), { retain: true })
+          for (var key in baseSequenzes) {
+            console.log(`PUBLISH BASE SEQUENZ ${key}: ${JSON.stringify(baseSequenzes[key])}`)
+            client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
           }
-          setTimeout(() => sequenzesProtection = false, 1000)
         }
       })
     })
@@ -106,17 +104,14 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         let doc = JSON.parse(message)
         if (topic === 'home/room/momme/light/bed') {
           console.log(`Set Sequenz to ${doc.val}`)
-
           currentSequenz = {
             name: doc.val,
             fullInitialized: false,
             currentFrame: 0
           }
         } else {
-          if (!sequenzesProtection) {
-            console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
-            sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
-          }
+          console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
+          sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
         }
       } catch (error) {
         console.log(error)
