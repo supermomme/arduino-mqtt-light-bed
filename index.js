@@ -131,6 +131,3 @@ function runCmd(strip, cmd) {
       break;
   }
 }
-
-{ "cmd": "strip", "r": 255, "g": 0, "b": 0 },
-{ "cmd": "show" }
