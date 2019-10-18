@@ -51,7 +51,6 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     gamma: 2.8
   })
   strip.on("ready", function() {
-    var SEQUENZ = "FULL_RED"
     console.log("Strip ready connecting to mqtt...")
 
     var client  = mqtt.connect(`mqtt://${hostname}`, {
@@ -98,7 +97,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
       strip.show()*/
 
-      let SEQUENZ = sequenzes[currentSequenz]
+      let SEQUENZ = sequenzes[currentSequenz.name]
 
       if (SEQUENZ == undefined) {
         strip.off()
