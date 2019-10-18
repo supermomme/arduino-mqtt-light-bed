@@ -92,19 +92,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     })
 
     setInterval(() => {
-      /*if (SEQUENZ === "FULL_RED") strip.color([255,0,0])
-      else if (SEQUENZ === "FULL_GREEN") strip.color([0,255,0])
-      else if (SEQUENZ === "FULL_WHITE") strip.color([255,255,255])
-      else if (SEQUENZ === "BLACK") strip.off()
-      else {
-        sequenzes[RUNNING_WHITE]
-      }
-      strip.show()*/
-
       let CURSEQ = sequenzes[currentSequenz.name]
-
+      console.log(CURSEQ)
       if (CURSEQ == undefined) {
-        strip.off()
+        strip.color([255,255,255])
         strip.show()
         return
       }
