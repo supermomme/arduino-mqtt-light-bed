@@ -2,15 +2,22 @@ var mqtt = require('mqtt')
 var pixel = require("node-pixel")
 var firmata = require('firmata')
 
-const fps = 60
+const fps = 30
 const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
 
 let sequenzes = {
+  "BLACK": { "SEQUENZ": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "FULL_RED": {
     "SEQUENZ": [
       { "cmd": "strip", "r": 255, "g": 0, "b": 0 },
+      { "cmd": "show" }
+    ]
+  },
+  "FULL_GREEN": {
+    "SEQUENZ": [
+      { "cmd": "strip", "r": 0, "g": 255, "b": 0 },
       { "cmd": "show" }
     ]
   },
@@ -35,7 +42,7 @@ let sequenzes = {
 }
 
 let currentSequenz = {
-  name: "RUNNING_WHITE",
+  name: "FULL_RED",
   fullInitialized: false,
   currentFrame: 0,
   waitFrames: 0
@@ -80,13 +87,14 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         let doc = JSON.parse(message)
         console.log(`${topic}: ${JSON.stringify(doc)}`)
         if (topic === 'home/room/momme/light/bed') {
-          /*currentSequenz = {
+          currentSequenz = {
             name: doc.val,
             fullInitialized: false,
             currentFrame: 0
-          }*/
+          }
         } else {
-          // SET SEQ
+          let newSeqName = topic.split('home/room/momme/light/bed')
+          console.log(newSeqName)
         }
       } catch (error) {
         console.log(error)
