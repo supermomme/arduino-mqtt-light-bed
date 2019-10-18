@@ -1,13 +1,13 @@
-var mqtt = require('mqtt')
-var pixel = require("node-pixel")
-var firmata = require('firmata')
+const mqtt = require('mqtt')
+const pixel = require("node-pixel")
+const firmata = require('firmata')
 
 const fps = 30
 const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
 
-let sequenzes = {
+var sequenzes = {
   "BLACK": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "OFF": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "FULL/RED": {
