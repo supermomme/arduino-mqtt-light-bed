@@ -24,7 +24,12 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     var client  = mqtt.connect(`mqtt://${hostname}`, {
       clientId: 'mommes-bett',
       username,
-      password
+      password,
+      will: {
+        topic: 'home/room/momme/light/bed',
+        payload: { connected: false },
+        retain: true
+      }
     })
     client.on('connect', function () {
       console.log("Connected")
@@ -34,6 +39,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         }
       })
     })
+
+    client.on('error', (err) => console.log(err))
 
     client.on('message', function (topic, message) {
       let doc = { }
