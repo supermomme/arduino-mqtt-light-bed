@@ -126,19 +126,29 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
       let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
 
-      if (currentSequenz.fullInitialized) {
-        if (SEQUENZ == undefined || SEQUENZ.length === 0) return
+      let doesSEQUENZWork = !(SEQUENZ == undefined || SEQUENZ.length === 0)
+      let doesINITWork = !(INIT == undefined || INIT.length === 0)
+
+      if ((doesSEQUENZWork && currentSequenz.fullInitialized) || (doesSEQUENZWork && !currentSequenz.fullInitialized && !doesINITWork)) {
+        // RUN SEQ
         runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
         else currentSequenz.currentFrame++
-      } else {
-        if (INIT == undefined || INIT.length === 0) { currentSequenz.fullInitialized = true; return }
+
+      } else if ((!doesSEQUENZWork && doesINITWork) || (doesSEQUENZWork && !currentSequenz.fullInitialized && doesINITWork)) {
+        // RUN INIT
         runCmd(strip, INIT[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === INIT.length-1) {
           currentSequenz.currentFrame = 0
           currentSequenz.fullInitialized = true
         } else currentSequenz.currentFrame++
+
+      } else if (!doesSEQUENZWork && !doesINITWork) {
+        console.log('BAD SEQUENZ: No SEQUENZ; No INIT')
+      } else {
+        console.log(`Somthing else is wrong: doesSEQUENZWork: ${doesSEQUENZWork} doesINITWork: ${doesINITWork} currentSequenz.fullInitialized: ${currentSequenz.fullInitialized}`)
       }
+
     }, 1000/fps)
   })
 })
