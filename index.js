@@ -27,15 +27,16 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       password,
       will: {
         topic: 'home/room/momme/light/bed',
-        payload: { connected: false },
-        retain: true
+        payload: JSON.stringify({ connected: false }),
+        retain: true,
+        qos: 0
       }
     })
     client.on('connect', function () {
       console.log("Connected")
-      client.subscribe(['home/room/momme/light/bed', 'home/room/momme/light/bed/#'], function (err) {
+      client.subscribe(['home/room/momme/light/bed/#'], function (err) {
         if (!err) {
-          client.publish('home/room/momme/light/bed', { val: "FULL_GREEN", connected: true })
+          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL_GREEN", connected: true }))
         }
       })
     })
