@@ -42,21 +42,22 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     })
 
     client.on('message', function (topic, message) {
-      let doc = { }
       try {
-        doc = JSON.parse(message)
+        let doc = JSON.parse(message)
+        console.log(`${topic}: ${JSON.stringify(doc)}`)
+        if (topic === 'home/room/momme/light/bed') {
+          SEQUENZ = doc.val
+        }
       } catch (error) {
         console.log(error)
       }
-      console.log(`${topic}: ${JSON.stringify(doc)}`)
     })
 
     setInterval(() => {
-      if (SEQUENZ === "FULL_RED") {
-        strip.color([255,0,0])
-      } else if (SEQUENZ === "FULL_GREEN") {
-        strip.color([0,255,0])
-      }
+      if (SEQUENZ === "FULL_RED") strip.color([255,0,0])
+      else if (SEQUENZ === "FULL_GREEN") strip.color([0,255,0])
+      else if (SEQUENZ === "FULL_WHITE") strip.color([255,255,255])
+      else if (SEQUENZ === "BLACK") strip.off()
       strip.show()
     }, 1000/fps)
   })
