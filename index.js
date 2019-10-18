@@ -110,12 +110,12 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
 
       if (currentSequenz.fullInitialized) {
-        runCmd(strip, SEQUENZ[currentSequenz.currentFrame])
+        runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
         else currentSequenz.currentFrame++
       } else {
         if (INIT == undefined || INIT.length === 0) { currentSequenz.fullInitialized = true; return }
-        runCmd(strip, INIT[currentSequenz.currentFrame])
+        runCmd(strip, INIT[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === INIT.length-1) {
           currentSequenz.currentFrame = 0
           currentSequenz.fullInitialized = true
@@ -125,7 +125,11 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
   })
 })
 
-function runCmd(strip, cmd) {
+function runCmd(strip, cmd, currentSequenz) {
+  if (currentSequenz.waitFrames > 0) {
+    currentSequenz.waitFrames--
+    return
+  }
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
       strip.color([cmd.r || 0, cmd.g || 0, cmd.b || 0])
@@ -145,6 +149,9 @@ function runCmd(strip, cmd) {
       break;
     case "SHOW":
       strip.show()
+      break;
+    case "WAIT":
+      currentSequenz.waitFrames = cmd.wait
       break;
   
     default:
