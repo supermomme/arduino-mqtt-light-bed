@@ -48,7 +48,7 @@ var sequenzes = {
       { "cmd": "show" }
     ],
     "SEQUENZ": [
-      { "cmd": "shift", "amt": 4, "dir": "BACKWARD", "wrap": true },
+      { "cmd": "shift", "amt": 1, "dir": "BACKWARD", "wrap": true },
       { "cmd": "show" }
     ]
   }
@@ -105,6 +105,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       try {
         let doc = JSON.parse(message)
         if (topic === 'home/room/momme/light/bed') {
+          console.log(`Set Sequenz to ${doc.val}`)
+
           currentSequenz = {
             name: doc.val,
             fullInitialized: false,
