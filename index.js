@@ -6,7 +6,7 @@ const fps = 20
 const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
-
+console.log(`${username}@${hostname}`)
 var board = new firmata.Board('/dev/ttyACM0',function(){
   strip = new pixel.Strip({
     firmata: board,
@@ -40,8 +40,6 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         }
       })
     })
-
-    client.on('error', (err) => console.log(err))
 
     client.on('message', function (topic, message) {
       let doc = { }
