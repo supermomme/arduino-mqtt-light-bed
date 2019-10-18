@@ -8,26 +8,33 @@ const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
 
 let sequenzes = {
-  "BLACK": { "SEQUENZ": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
-  "FULL_RED": {
-    "SEQUENZ": [
+  "BLACK": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
+  "OFF": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
+  "FULL/RED": {
+    "INIT": [
       { "cmd": "strip", "r": 255, "g": 0, "b": 0 },
       { "cmd": "show" }
     ]
   },
-  "FULL_GREEN": {
-    "SEQUENZ": [
+  "FULL/GREEN": {
+    "INIT": [
       { "cmd": "strip", "r": 0, "g": 255, "b": 0 },
       { "cmd": "show" }
     ]
   },
-  "FULL_WHITE": {
-    "SEQUENZ": [
+  "FULL/BLUE": {
+    "INIT": [
+      { "cmd": "strip", "r": 0, "g": 0, "b": 255 },
+      { "cmd": "show" }
+    ]
+  },
+  "FULL/WHITE": {
+    "INIT": [
       { "cmd": "strip", "r": 255, "g": 255, "b": 255 },
       { "cmd": "show" }
     ]
   },
-  "RUNNING_WHITE": {
+  "RUNNING/WHITE": {
     "INIT": [
       { "cmd": "off" },
       { "cmd": "pixel", "pixel": 0, "r": 255, "g": 255, "b": 255 },
@@ -42,7 +49,7 @@ let sequenzes = {
 }
 
 let currentSequenz = {
-  name: "FULL_RED",
+  name: "FULL/RED",
   fullInitialized: false,
   currentFrame: 0,
   waitFrames: 0
@@ -77,7 +84,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       console.log("Connected")
       client.subscribe(['home/room/momme/light/bed/#'], function (err) {
         if (!err) {
-          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL_GREEN", connected: true }), { retain: true })
+          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
+          for (var key in sequenzes) {
+            client.publish('home/room/momme/light/bed/'+key, JSON.stringify(sequenzes[key]), { retain: true })
+          }
         }
       })
     })
@@ -110,6 +120,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
 
       if (currentSequenz.fullInitialized) {
+        if (SEQUENZ == undefined || SEQUENZ.length === 0) return
         runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
         else currentSequenz.currentFrame++
