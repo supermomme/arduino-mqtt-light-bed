@@ -57,7 +57,6 @@ var currentSequenz = {
 
 var sequenzesProtection = true
 
-console.log(`${username}@${hostname}`)
 var board = new firmata.Board('/dev/ttyACM0',function(){
   strip = new pixel.Strip({
     firmata: board,
@@ -83,12 +82,12 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
     })
     client.on('connect', function () {
-      console.log("Connected")
+      console.log("Connected to MQTT")
       client.subscribe(['home/room/momme/light/bed/#'], function (err) {
         if (!err) {
           client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
           for (var key in sequenzes) {
-            console.log(`PUBLISH ${key}: ${sequenzes[key]}`)
+            console.log(`PUBLISH SAVED SEQUENZ ${key}: ${sequenzes[key]}`)
             client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: sequenzes[key] }), { retain: true })
           }
           setTimeout(() => sequenzesProtection = false, 1000)
@@ -99,7 +98,6 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     client.on('message', function (topic, message) {
       try {
         let doc = JSON.parse(message)
-        console.log(`${topic}: ${JSON.stringify(doc)}`)
         if (topic === 'home/room/momme/light/bed') {
           currentSequenz = {
             name: doc.val,
@@ -108,7 +106,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
           }
         } else {
           if (!sequenzesProtection) {
-            console.log(`Create/Patch Sequenz: ${topic.split('home/room/momme/light/bed/')[1]}`)
+            console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
             sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
           }
         }
