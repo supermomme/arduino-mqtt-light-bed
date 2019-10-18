@@ -158,12 +158,16 @@ function runCmd(strip, cmd, currentSequenz) {
     currentSequenz.waitFrames--
     return
   }
+  let rgb = [1,1,1]
+  if (cmd.r != undefined) rgb[0] = cmd.r
+  if (cmd.g != undefined) rgb[1] = cmd.g
+  if (cmd.b != undefined) rgb[2] = cmd.b
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
-      strip.color([cmd.r || 0, cmd.g || 0, cmd.b || 0])
+      strip.color(rgb)
       break;
     case "PIXEL":
-      strip.pixel(cmd.pixel).color([cmd.r || 0, cmd.g || 0, cmd.b || 0])
+      strip.pixel(cmd.pixel).color(rgb)
       break;
     case "SHIFT":
       let dir = cmd.dir.toUpperCase() === 'FORWARD' ? pixel.FORWARD : pixel.BACKWARD
