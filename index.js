@@ -129,13 +129,13 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       let doesSEQUENZWork = !(SEQUENZ == undefined || SEQUENZ.length === 0)
       let doesINITWork = !(INIT == undefined || INIT.length === 0)
 
-      if ((doesSEQUENZWork && currentSequenz.fullInitialized) || (doesSEQUENZWork && !currentSequenz.fullInitialized && !doesINITWork)) {
+      if (doesSEQUENZWork && ((currentSequenz.fullInitialized) || (!currentSequenz.fullInitialized && !doesINITWork))) {
         // RUN SEQ
         runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
         else currentSequenz.currentFrame++
 
-      } else if ((!doesSEQUENZWork && doesINITWork) || (doesSEQUENZWork && !currentSequenz.fullInitialized && doesINITWork)) {
+      } else if (!currentSequenz.fullInitialized) {
         // RUN INIT
         runCmd(strip, INIT[currentSequenz.currentFrame], currentSequenz)
         if (currentSequenz.currentFrame === INIT.length-1) {
