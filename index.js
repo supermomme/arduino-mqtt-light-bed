@@ -103,7 +103,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
       let CURSEQ = sequenzes[currentSequenz.name]
 
-      if (SEQUENZ == undefined) {
+      if (CURSEQ == undefined) {
         strip.off()
         strip.show()
         return
