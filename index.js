@@ -92,18 +92,17 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     })
 
     setInterval(() => {
-      let CURSEQ = sequenzes[currentSequenz.name]
-      console.log(CURSEQ)
-      if (CURSEQ == undefined) {
-        strip.color([255,255,255])
+      if (sequenzes[currentSequenz.name] == undefined) {
+        strip.off()
         strip.show()
         return
       }
+      let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
 
-      if (CURSEQ.fullInitialized) {
-        runCmd(strip, CURSEQ.SEQUENZ[CURSEQ.currentFrame])
-        if (CURSEQ.currentFrame === CURSEQ.SEQUENZ.length-1) CURSEQ.currentFrame = 0
-        else CURSEQ.currentFrame++
+      if (currentSequenz.fullInitialized) {
+        runCmd(strip, SEQUENZ[currentSequenz.currentFrame])
+        if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
+        else currentSequenz.currentFrame++
       } else {
         
       }
