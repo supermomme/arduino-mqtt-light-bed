@@ -2,7 +2,7 @@ var mqtt = require('mqtt')
 var pixel = require("node-pixel")
 var firmata = require('firmata')
 
-const fps = 40
+const fps = 60
 const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
@@ -28,7 +28,7 @@ let sequenzes = {
       { "cmd": "show" }
     ],
     "SEQUENZ": [
-      { "cmd": "shift", "amt": 2, "dir": "BACKWARD", "wrap": true },
+      { "cmd": "shift", "amt": 4, "dir": "BACKWARD", "wrap": true },
       { "cmd": "show" }
     ]
   }
