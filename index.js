@@ -1,5 +1,3 @@
-/*pixel = require("node-pixel")
-five = require("johnny-five")
 var mqtt = require('mqtt')
 
 var board = new five.Board()
@@ -19,7 +17,7 @@ board.on("ready", function() {
   strip.on("ready", function() {
     var SEQUENZ = "FULL_RED"
     console.log("Strip ready connecting to mqtt...")
-/*    var client  = mqtt.connect('mqtt://10.0.100.10')
+    var client  = mqtt.connect('mqtt://10.0.100.10')
     client.on('connect', function () {
       console.log("Connected")
       client.subscribe(['home/room/momme/light/bed', 'home/room/momme/light/bed/#'], function (err) {
@@ -40,12 +38,15 @@ board.on("ready", function() {
         strip
       }
     }, 1000/20);
-*
+
   })
 })
-*/
+
+
 pixel = require("node-pixel");
 var firmata = require('firmata');
+
+const fps = 20;
 
 var board = new firmata.Board('/dev/ttyACM0',function(){
   strip = new pixel.Strip({
@@ -58,17 +59,37 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     gamma: 2.8
   })
   strip.on("ready", function() {
-    console.log("READY")
-    strip.pixel(0).color([0,0,0])
-    strip.pixel(1).color([255,0,0])
-    strip.pixel(2).color([255,0,0])
-    strip.pixel(3).color([255,0,0])
-    strip.pixel(4).color([255,0,0])
-    strip.show()
+    var SEQUENZ = "FULL_RED"
+    console.log("Strip ready connecting to mqtt...")
+
+    var client  = mqtt.connect('mqtt://10.0.100.10')
+    client.on('connect', function () {
+      console.log("Connected")
+      client.subscribe(['home/room/momme/light/bed', 'home/room/momme/light/bed/#'], function (err) {
+        if (!err) {
+          client.publish('home/room/momme/light/bed', { val: "FULL_GREEN", connected: true })
+        }
+      })
+    })
+
+    client.on('message', function (topic, message) {
+      let doc = { }
+      try {
+        doc = JSON.parse(message)
+      } catch (error) {
+        console.log(error)
+      }
+      console.log(`${topic}: ${JSON.stringify(doc)}`)
+    })
+
     setInterval(() => {
-      strip.shift(1, pixel.FORWARD, true)
+      if (SEQUENZ === "FULL_RED") {
+        strip.color([255,0,0])
+      } else if (SEQUENZ === "FULL_GREEN") {
+        strip.color([0,255,0])
+      }
       strip.show()
-    }, 1000/30)
+    }, 1000/fps)
   });
 });
 
