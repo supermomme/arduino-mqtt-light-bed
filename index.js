@@ -101,6 +101,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
   ////// HTTP \\\\\\
   var app = express();
+  app.use(express.json())
+  app.use(express.urlencoded({ extended: true }))
 
   app.get('/sequenz', function (req, res) {
     res.json(sequenzes)
@@ -111,8 +113,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     res.json()
   })
 
-  app.listen(80, function () {
-    console.log('App listening on port 80!');
+  app.listen(3000, function () {
+    console.log('App listening on port 3000!');
   })
 
 
