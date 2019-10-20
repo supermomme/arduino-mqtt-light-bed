@@ -119,7 +119,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     })
 
     setInterval(() => {
-      if (sequenzes[currentSequenz.name] == undefined) {
+      runCmd(strip, { cmd: 'STRIP' }, currentSequenz)
+      /*if (sequenzes[currentSequenz.name] == undefined) {
         strip.off()
         strip.show()
         return
@@ -145,7 +146,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
       } else if (!doesSEQUENZWork && !doesINITWork) {
         console.log('BAD SEQUENZ: No SEQUENZ; No INIT')
-      }
+      }*/
 
     }, 1000/fps)
   })
@@ -156,10 +157,10 @@ function runCmd(strip, cmd, currentSequenz) {
     currentSequenz.waitFrames--
     return
   }
-  let rgb = [1,1,1]
-  if (cmd.r != undefined) rgb[0] = cmd.r
-  if (cmd.g != undefined) rgb[1] = cmd.g
-  if (cmd.b != undefined) rgb[2] = cmd.b
+  let rgb = [50,50,50]
+  if (cmd.r != undefined) rgb[0] = Number(cmd.r)
+  if (cmd.g != undefined) rgb[1] = Number(cmd.g)
+  if (cmd.b != undefined) rgb[2] = Number(cmd.b)
   console.log(`${cmd.cmd} ; ${rgb} ; ${currentSequenz}`)
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
