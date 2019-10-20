@@ -1,6 +1,7 @@
 const mqtt = require('mqtt')
 const pixel = require("node-pixel")
 const firmata = require('firmata')
+const express = require('express')
 
 const fps = 20
 const hostname = process.argv[2] || process.env.MQTT_HOSTNAME
@@ -96,7 +97,27 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       {pin: 7, length: 60}
     ]
   })
-  console.log("Strip ready connecting to mqtt...")
+  console.log("Strip ready connecting to mqtt and start http server...")
+
+
+  ////// HTTP \\\\\\
+  var app = express();
+
+  app.get('/sequenz', function (req, res) {
+    res.json(sequenzes)
+  })
+
+  app.post('/sequenz', function (req, res) {
+    console.log(req.body)
+    res.json()
+  })
+
+  app.listen(80, function () {
+    console.log('App listening on port 80!');
+  })
+
+
+  ///// MQTT \\\\\\
   var client  = mqtt.connect(`mqtt://${hostname}`, {
     clientId: 'mommes-bett',
     username,
@@ -139,6 +160,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     }
   })
 
+  
+  ////// LOOP \\\\\\
   setInterval(() => {
     if (sequenzes[currentSequenz.name] == undefined) {
       strip.off()
