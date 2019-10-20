@@ -9,8 +9,7 @@ const username = process.argv[3] || process.env.MQTT_USERNAME
 const password = process.argv[4] || process.env.MQTT_PASSWORD
 const baseTopic = 'home/room/momme/light/bed'
 
-var sequenzes = { }
-const baseSequenzes = {
+var sequenzes = {
   "BLACK": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "OFF": { "INIT": [ { "cmd": "OFF" }, { "cmd": "show" } ] },
   "FULL/RED": {
@@ -131,36 +130,27 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
   })
   client.on('connect', function () {
     console.log("Connected to MQTT")
-    client.subscribe([baseTopic+'/#'], function (err) {
+    client.subscribe([baseTopic], function (err) {
       if (!err) {
-        client.publish(baseTopic, JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
-        for (var key in baseSequenzes) {
-          console.log(`PUBLISH BASE SEQUENZ ${key}: ${JSON.stringify(baseSequenzes[key])}`)
-          client.publish(baseTopic + '/' + key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
-        }
+        client.publish(baseTopic, JSON.stringify({ val: "HALF/GREEN", connected: true }), { retain: true })
       }
     })
   })
    client.on('message', function (topic, message) {
     try {
       let doc = JSON.parse(message)
-      if (topic === baseTopic) {
-        console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
-        currentSequenz = {
-          name: doc.val,
-          fullInitialized: false,
-          currentFrame: 0
-        }
-      } else {
-        console.log(`Create/Patch Sequenz ${topic.split(baseTopic + '/')[1]}: ${JSON.stringify(doc.val)}`)
-        sequenzes[topic.split(baseTopic + '/')[1]] = doc.val
+      console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
+      currentSequenz = {
+        name: doc.val,
+        fullInitialized: false,
+        currentFrame: 0
       }
     } catch (error) {
       console.log(error)
     }
   })
 
-  
+
   ////// LOOP \\\\\\
   setInterval(() => {
     if (sequenzes[currentSequenz.name] == undefined) {
