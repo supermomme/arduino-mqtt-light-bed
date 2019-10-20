@@ -3,9 +3,9 @@ const pixel = require("node-pixel")
 const firmata = require('firmata')
 
 const fps = 20
-const hostname = process.env.MQTT_HOSTNAME
-const password = process.env.MQTT_PASSWORD
-const username = process.env.MQTT_USERNAME
+const hostname = process.argv[2] || process.env.MQTT_HOSTNAME
+const username = process.argv[3] || process.env.MQTT_USERNAME
+const password = process.argv[4] || process.env.MQTT_PASSWORD
 const baseTopic = 'home/room/momme/light/bed'
 
 var sequenzes = { }
