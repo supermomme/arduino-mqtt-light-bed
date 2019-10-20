@@ -110,7 +110,10 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
   app.post('/sequenz', function (req, res) {
     console.log(req.body)
-    res.json()
+    for (const key in req.body) {
+      sequenzes[key] = req.body[key]
+    }
+    res.sendStatus(200)
   })
 
   app.listen(3000, function () {
