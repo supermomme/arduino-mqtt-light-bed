@@ -172,10 +172,7 @@ function runCmd(strip, cmd, currentSequenz) {
     currentSequenz.waitFrames--
     return
   }
-  let rgb = [0,0,0]
-  if (cmd.r != undefined) rgb[0] = Number(cmd.r)
-  if (cmd.g != undefined) rgb[1] = Number(cmd.g)
-  if (cmd.b != undefined) rgb[2] = Number(cmd.b)
+
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
       strip.color([
