@@ -35,6 +35,30 @@ const baseSequenzes = {
       { "cmd": "show" }
     ]
   },
+  "HALF/RED": {
+    "INIT": [
+      { "cmd": "strip", "r": 128 },
+      { "cmd": "show" }
+    ]
+  },
+  "HALF/GREEN": {
+    "INIT": [
+      { "cmd": "strip", "g": 128 },
+      { "cmd": "show" }
+    ]
+  },
+  "HALF/BLUE": {
+    "INIT": [
+      { "cmd": "strip", "b": 128 },
+      { "cmd": "show" }
+    ]
+  },
+  "HALF/WHITE": {
+    "INIT": [
+      { "cmd": "strip", "r": 128, "g": 128, "b": 128 },
+      { "cmd": "show" }
+    ]
+  },
   "RUNNING/WHITE": {
     "INIT": [
       { "cmd": "off" },
@@ -56,100 +80,90 @@ const baseSequenzes = {
 }
 
 var currentSequenz = {
-  name: "FULL/RED",
+  name: "BLACK",
   fullInitialized: false,
   currentFrame: 0,
   waitFrames: 0
 }
+var strip = null;
 
 var board = new firmata.Board('/dev/ttyACM0',function(){
   strip = new pixel.Strip({
     firmata: board,
-    controller: "FIRMATA",
     strips: [
       {pin: 6, length: 60},
       {pin: 7, length: 60}
-    ],
-    gamma: 2.8
+    ]
   })
-  strip.on("ready", function() {
-    console.log("Strip ready connecting to mqtt...")
-
-    var client  = mqtt.connect(`mqtt://${hostname}`, {
-      clientId: 'mommes-bett',
-      username,
-      password,
-      will: {
-        topic: 'home/room/momme/light/bed',
-        payload: JSON.stringify({ connected: false }),
-        retain: true,
-        qos: 0
-      }
-    })
-    client.on('connect', function () {
-      console.log("Connected to MQTT")
-      client.subscribe(['home/room/momme/light/bed/#'], function (err) {
-        if (!err) {
-          client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
-          for (var key in baseSequenzes) {
-            console.log(`PUBLISH BASE SEQUENZ ${key}: ${JSON.stringify(baseSequenzes[key])}`)
-            client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
-          }
-        }
-      })
-    })
-
-    client.on('message', function (topic, message) {
-      try {
-        let doc = JSON.parse(message)
-        if (topic === 'home/room/momme/light/bed') {
-          console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
-          currentSequenz = {
-            name: doc.val,
-            fullInitialized: false,
-            currentFrame: 0
-          }
-        } else {
-          console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
-          sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    })
-
-    setInterval(() => {
-      runCmd(strip, { cmd: 'STRIP' }, currentSequenz)
-      /*if (sequenzes[currentSequenz.name] == undefined) {
-        strip.off()
-        strip.show()
-        return
-      }
-      let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
-
-      let doesSEQUENZWork = !(SEQUENZ == undefined || SEQUENZ.length === 0)
-      let doesINITWork = !(INIT == undefined || INIT.length === 0)
-
-      if (doesSEQUENZWork && ((currentSequenz.fullInitialized) || (!currentSequenz.fullInitialized && !doesINITWork))) {
-        // RUN SEQ
-        runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
-        if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
-        else currentSequenz.currentFrame++
-
-      } else if (!currentSequenz.fullInitialized) {
-        // RUN INIT
-        runCmd(strip, INIT[currentSequenz.currentFrame], currentSequenz)
-        if (currentSequenz.currentFrame === INIT.length-1) {
-          currentSequenz.currentFrame = 0
-          currentSequenz.fullInitialized = true
-        } else currentSequenz.currentFrame++
-
-      } else if (!doesSEQUENZWork && !doesINITWork) {
-        console.log('BAD SEQUENZ: No SEQUENZ; No INIT')
-      }*/
-
-    }, 1000/fps)
+  console.log("Strip ready connecting to mqtt...")
+  var client  = mqtt.connect(`mqtt://${hostname}`, {
+    clientId: 'mommes-bett',
+    username,
+    password,
+    will: {
+      topic: 'home/room/momme/light/bed',
+      payload: JSON.stringify({ connected: false }),
+      retain: true,
+      qos: 0
+    }
   })
+  client.on('connect', function () {
+    console.log("Connected to MQTT")
+    client.subscribe(['home/room/momme/light/bed/#'], function (err) {
+      if (!err) {
+        client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
+        for (var key in baseSequenzes) {
+          console.log(`PUBLISH BASE SEQUENZ ${key}: ${JSON.stringify(baseSequenzes[key])}`)
+          client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
+        }
+      }
+    })
+  })
+   client.on('message', function (topic, message) {
+    try {
+      let doc = JSON.parse(message)
+      if (topic === 'home/room/momme/light/bed') {
+        console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
+        currentSequenz = {
+          name: doc.val,
+          fullInitialized: false,
+          currentFrame: 0
+        }
+      } else {
+        console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
+        sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
+  setInterval(() => {
+    if (sequenzes[currentSequenz.name] == undefined) {
+      strip.off()
+      strip.show()
+      return
+    }
+    let { SEQUENZ, INIT } = sequenzes[currentSequenz.name]
+    let doesSEQUENZWork = !(SEQUENZ == undefined || SEQUENZ.length === 0)
+    let doesINITWork = !(INIT == undefined || INIT.length === 0)
+
+    if (doesSEQUENZWork && ((currentSequenz.fullInitialized) || (!currentSequenz.fullInitialized && !doesINITWork))) {
+      // RUN SEQ
+      runCmd(strip, SEQUENZ[currentSequenz.currentFrame], currentSequenz)
+      if (currentSequenz.currentFrame === SEQUENZ.length-1) currentSequenz.currentFrame = 0
+      else currentSequenz.currentFrame++
+    } else if (!currentSequenz.fullInitialized) {
+      // RUN INIT
+      runCmd(strip, INIT[currentSequenz.currentFrame], currentSequenz)
+      if (currentSequenz.currentFrame === INIT.length-1) {
+        currentSequenz.currentFrame = 0
+        currentSequenz.fullInitialized = true
+      } else currentSequenz.currentFrame++
+    } else if (!doesSEQUENZWork && !doesINITWork) {
+      console.log('BAD SEQUENZ: No SEQUENZ; No INIT')
+    }
+  }, 1000/fps)
 })
 
 function runCmd(strip, cmd, currentSequenz) {
@@ -157,11 +171,10 @@ function runCmd(strip, cmd, currentSequenz) {
     currentSequenz.waitFrames--
     return
   }
-  let rgb = [50,50,50]
+  let rgb = [0,0,0]
   if (cmd.r != undefined) rgb[0] = Number(cmd.r)
   if (cmd.g != undefined) rgb[1] = Number(cmd.g)
   if (cmd.b != undefined) rgb[2] = Number(cmd.b)
-  console.log(`${cmd.cmd} ; ${rgb} ; ${currentSequenz}`)
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
       strip.color(rgb)
