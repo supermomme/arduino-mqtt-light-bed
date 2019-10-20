@@ -46,7 +46,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     for (const key in req.body) {
       seqs[key] = req.body[key]
     }
-    fs.writeFileSync(sequenzFile, seqs)
+    fs.writeFileSync(sequenzFile, JSON.stringify(seqs))
     res.sendStatus(200)
   })
 
