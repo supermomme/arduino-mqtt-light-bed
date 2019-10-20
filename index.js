@@ -6,6 +6,7 @@ const fps = 20
 const hostname = process.env.MQTT_HOSTNAME
 const password = process.env.MQTT_PASSWORD
 const username = process.env.MQTT_USERNAME
+const baseTopic = 'home/room/momme/light/bed'
 
 var sequenzes = { }
 const baseSequenzes = {
@@ -101,7 +102,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     username,
     password,
     will: {
-      topic: 'home/room/momme/light/bed',
+      topic: baseTopic,
       payload: JSON.stringify({ connected: false }),
       retain: true,
       qos: 0
@@ -109,12 +110,12 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
   })
   client.on('connect', function () {
     console.log("Connected to MQTT")
-    client.subscribe(['home/room/momme/light/bed/#'], function (err) {
+    client.subscribe([baseTopic+'/#'], function (err) {
       if (!err) {
-        client.publish('home/room/momme/light/bed', JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
+        client.publish(baseTopic, JSON.stringify({ val: "FULL/GREEN", connected: true }), { retain: true })
         for (var key in baseSequenzes) {
           console.log(`PUBLISH BASE SEQUENZ ${key}: ${JSON.stringify(baseSequenzes[key])}`)
-          client.publish('home/room/momme/light/bed/'+key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
+          client.publish(baseTopic + '/' + key, JSON.stringify({ val: baseSequenzes[key] }), { retain: true })
         }
       }
     })
@@ -122,7 +123,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
    client.on('message', function (topic, message) {
     try {
       let doc = JSON.parse(message)
-      if (topic === 'home/room/momme/light/bed') {
+      if (topic === baseTopic) {
         console.log(`Set Sequenz to ${doc.val}: ${JSON.stringify(sequenzes[doc.val])}`)
         currentSequenz = {
           name: doc.val,
@@ -130,8 +131,8 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
           currentFrame: 0
         }
       } else {
-        console.log(`Create/Patch Sequenz ${topic.split('home/room/momme/light/bed/')[1]}: ${JSON.stringify(doc.val)}`)
-        sequenzes[topic.split('home/room/momme/light/bed/')[1]] = doc.val
+        console.log(`Create/Patch Sequenz ${topic.split(baseTopic + '/')[1]}: ${JSON.stringify(doc.val)}`)
+        sequenzes[topic.split(baseTopic + '/')[1]] = doc.val
       }
     } catch (error) {
       console.log(error)
@@ -177,13 +178,30 @@ function runCmd(strip, cmd, currentSequenz) {
   if (cmd.b != undefined) rgb[2] = Number(cmd.b)
   switch (cmd.cmd.toUpperCase()) {
     case "STRIP":
-      strip.color(rgb)
+      strip.color([
+        Number(cmd.r || 0),
+        Number(cmd.g || 0),
+        Number(cmd.b || 0)
+      ])
       break;
     case "PIXEL":
-      strip.pixel(cmd.pixel).color(rgb)
+      strip.pixel(cmd.pixel).color([
+        Number(cmd.r || 0),
+        Number(cmd.g || 0),
+        Number(cmd.b || 0)
+      ])
+      break;
+    case "PIXELARRAY":
+      for (var i = 0; i < cmd.pixels.length; i++) {
+        strip.pixel(i).color([
+          Number(cmd.pixels[i].r || 0),
+          Number(cmd.pixels[i].g || 0),
+          Number(cmd.pixels[i].b || 0)
+        ])
+      }       
       break;
     case "SHIFT":
-      let dir = cmd.dir.toUpperCase() === 'FORWARD' ? pixel.FORWARD : pixel.BACKWARD
+      let dir = cmd.dir.toUpperCase() === 'BACKWARD' ? pixel.BACKWARD : pixel.FORWARD
       strip.shift(cmd.amt || 1, dir, cmd.wrap || true);
       break;
     case "PIXEL_OFF":
