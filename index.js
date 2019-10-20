@@ -2,6 +2,7 @@ const mqtt = require('mqtt')
 const pixel = require("node-pixel")
 const firmata = require('firmata')
 const express = require('express')
+const fs = require('fs')
 
 const fps = 20
 const hostname = process.argv[2] || process.env.MQTT_HOSTNAME
