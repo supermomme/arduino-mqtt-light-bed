@@ -70,7 +70,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
   })
   client.on('connect', function () {
     console.log("Connected to MQTT")
-    client.subscribe([baseTopic], function (err) {
+    client.subscribe([baseTopic + '/set'], function (err) {
       if (!err) {
         client.publish(baseTopic, JSON.stringify({ val: "HALF/GREEN", connected: true }), { retain: true })
       }
@@ -86,6 +86,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
         fullInitialized: false,
         currentFrame: 0
       }
+      client.publish(baseTopic, JSON.stringify({ val: doc.val, connected: true }), { retain: true })
     } catch (error) {
       console.log(error)
     }

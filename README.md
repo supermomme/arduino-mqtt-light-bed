@@ -44,7 +44,7 @@ You can also add/update more sequenzes in one POST request. Just add them in the
 * WAIT
     * wait = frames to do nothing
 ## Choose Sequenz
-Choose SEQUENZ in the baseTopic with JSON in val
+Choose SEQUENZ in the baseTopic/set with JSON in val. Read it in baseTopic
 ### Example
 ```
 {
