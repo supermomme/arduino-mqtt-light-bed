@@ -81,7 +81,6 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       let doc = JSON.parse(message)
       console.log(`Set Sequenz to ${doc.val}`)
       let seqs = JSON.parse(fs.readFileSync(sequenzFile));
-      console.log(seqs[doc.val])
       currentSequenz = {
         sequenz: seqs[doc.val],
         fullInitialized: false,

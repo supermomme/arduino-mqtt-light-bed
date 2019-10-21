@@ -1,6 +1,6 @@
 const fs = require('fs')
 
-const size = 120
+const size = 60
 const file = __dirname + '/rainbowCycle.json'
 
 var rainbow = new Array(size)
@@ -19,18 +19,23 @@ function sin_to_val(i, phase) {
   return int
 }
 
+let rb = rainbow.reduce((prev, cur) => {
+  prev.push({
+    "r": cur[0],
+    "g": cur[1],
+    "b": cur[2]
+  })
+  return prev
+}, [])
+
 let INIT = [
   { "cmd": "off" },
   {
     "cmd": "pixelArray",
-    "pixels": rainbow.reduce((prev, cur) => {
-      prev.push({
-        "r": cur[0],
-        "g": cur[1],
-        "b": cur[2]
-      })
-      return prev
-    }, [])
+    "pixels": [
+      ...rb,
+      ...rb
+    ]
   }
 ]
 
