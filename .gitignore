@@ -96,4 +96,5 @@ public/
 .dynamodb/
 
 # End of https://www.gitignore.io/api/node
-test.js
+test*
+sequenzes.json
