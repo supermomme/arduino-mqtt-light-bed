@@ -95,6 +95,8 @@ public/
 # DynamoDB Local files
 .dynamodb/
 
-data/
 # End of https://www.gitignore.io/api/node
 test*
+
+data/
+sequenzGenerator/*.json

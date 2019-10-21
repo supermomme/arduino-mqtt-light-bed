@@ -1,7 +1,7 @@
 const fs = require('fs')
 
 const size = 1000
-const file = 'rainbow.json'
+const file = __dirname + '/rainbow.json'
 
 var rainbow = new Array(size)
 
