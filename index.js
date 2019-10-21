@@ -105,7 +105,9 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
     if(currentSequenz.sequenz.INIT == undefined) currentSequenz.sequenz.INIT = []
 
     if (currentSequenz.fullInitialized && currentSequenz.sequenz.SEQUENZ.length > 0) runSEQUENZ(strip, currentSequenz)
-    else if(!currentSequenz.fullInitialized && currentSequenz.sequenz.INIT.length > 0) runINIT(strip, currentSequenz)
+    else if (!currentSequenz.fullInitialized && currentSequenz.sequenz.INIT.length > 0) runINIT(strip, currentSequenz)
+    else if (!currentSequenz.fullInitialized && currentSequenz.sequenz.INIT.length === 0) currentSequenz.fullInitialized = true
+    else console.log('?!')
   }, 1000/fps)
 })
 
