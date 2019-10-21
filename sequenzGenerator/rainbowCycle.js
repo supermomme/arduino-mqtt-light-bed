@@ -1,7 +1,7 @@
 const fs = require('fs')
 
-const size = 100
-const file = __dirname + '/rainbow.json'
+const size = 120
+const file = __dirname + '/rainbowCycle.json'
 
 var rainbow = new Array(size)
 
@@ -19,17 +19,27 @@ function sin_to_val(i, phase) {
   return int
 }
 
+let INIT = [
+  { "cmd": "off" },
+  {
+    "cmd": "pixelArray",
+    "pixels": rainbow.reduce((prev, cur) => {
+      prev.push({
+        "r": cur[0],
+        "g": cur[1],
+        "b": cur[2]
+      })
+      return prev
+    }, [])
+  }
+]
+
 let finalResult = {
-  SEQUENZ: rainbow.reduce((prev, cur) => {
-    prev.push({
-      "cmd": "STRIP",
-      "r": cur[0],
-      "g": cur[1],
-      "b": cur[2]
-    })
-    prev.push({ "cmd": "SHOW" })
-    return prev
-  }, [])
+  INIT,
+  SEQUENZ: [
+    { "cmd": "shift" },
+    { "cmd": "show" }
+  ]
 }
 
 fs.writeFileSync(file, JSON.stringify(finalResult))

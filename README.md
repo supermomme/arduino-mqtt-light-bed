@@ -3,10 +3,10 @@
 * Arduino installed with [node-pixel](https://github.com/ajfisher/node-pixel)
 
 ## Create Sequenz
-create sequenz in *<baseTopic>/<SEQUENZ_NAME>* with following JSON structure
+create/update sequenz via http with following JSON structure at **POST X:3000/sequenz**
 ```
 {
-    "val": {
+    "<SEQUENZ_NAME>": {
         "INIT": [
             // INIT COMMANDS
             // EXAMPLE: { "cmd": "STRIP", "r": 0-255, "g": 0-255, "b": 0-255 }
@@ -17,6 +17,7 @@ create sequenz in *<baseTopic>/<SEQUENZ_NAME>* with following JSON structure
     }
 }
 ```
+You can also add/update more sequenzes in one POST request. Just add them in the object
 ### Commands
 * STRIP
     * r = RED (0-255)

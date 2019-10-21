@@ -157,7 +157,7 @@ function runCmd(strip, cmd, currentSequenz) {
       }       
       break;
     case "SHIFT":
-      let dir = cmd.dir.toUpperCase() === 'BACKWARD' ? pixel.BACKWARD : pixel.FORWARD
+      let dir = cmd.dir && cmd.dir.toUpperCase() === 'BACKWARD' ? pixel.BACKWARD : pixel.FORWARD
       strip.shift(cmd.amt || 1, dir, cmd.wrap || true);
       break;
     case "PIXEL_OFF":
