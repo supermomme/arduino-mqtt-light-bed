@@ -8,6 +8,7 @@ const fps = 20
 const hostname = process.argv[2] || process.env.MQTT_HOSTNAME
 const username = process.argv[3] || process.env.MQTT_USERNAME
 const password = process.argv[4] || process.env.MQTT_PASSWORD
+const clientId = 'mommes-bett'
 const baseTopic = 'home/room/momme/light/bed'
 const sequenzFile = './data/sequenzes.json'
 
@@ -57,7 +58,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
 
   ///// MQTT \\\\\\
   var client  = mqtt.connect(`mqtt://${hostname}`, {
-    clientId: 'mommes-bett',
+    clientId,
     username,
     password,
     will: {
@@ -75,7 +76,7 @@ var board = new firmata.Board('/dev/ttyACM0',function(){
       }
     })
   })
-   client.on('message', function (topic, message) {
+  client.on('message', function (topic, message) {
     try {
       let doc = JSON.parse(message)
       console.log(`Set Sequenz to ${doc.val}`)
