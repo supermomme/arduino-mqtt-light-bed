@@ -9,7 +9,7 @@ const hostname = process.argv[2] || process.env.MQTT_HOSTNAME
 const username = process.argv[3] || process.env.MQTT_USERNAME
 const password = process.argv[4] || process.env.MQTT_PASSWORD
 const baseTopic = 'home/room/momme/light/bed'
-const sequenzFile = './sequenzes.json'
+const sequenzFile = './data/sequenzes.json'
 
 var currentSequenz = {
   name: "BLACK",
